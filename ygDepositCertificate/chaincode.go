@@ -50,9 +50,11 @@ func (t *YGDCChaincode) invoke(stub shim.ChaincodeStubInterface, args []string) 
 	Data = args[2]
 
 	key := tomd5(Owner + Desc)
-	_, err = stub.GetState(key)
+	dcBytes, err := stub.GetState(key)
 	if err != nil {
-		return shim.Error("data repeat")
+		return shim.Error("Failed to get dc:" + err.Error())
+	} else if dcBytes != nil {
+		return shim.Error("This dc already exists:" + Owner + Desc)
 	}
 
 	dataToTransfer := ygdc{}
